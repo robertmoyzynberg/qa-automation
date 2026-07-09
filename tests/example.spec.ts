@@ -37,3 +37,24 @@ test("Enterprise E2E: Verify Checkout Business Math Logic", async ({
     `\n -> Success! Web Tax ($${webTaxNumerical}) matches Calculated Tax ($${expectedTaxCalculated})`,
   );
 });
+
+test("Security Edge Case: System Rejects Invalid Credentials", async ({
+  page,
+}) => {
+  const loginPage = new LoginPage(page);
+
+  // 1. Attempt authentication with an invalid hacker profile
+  await loginPage.navigate();
+  await loginPage.login("invalid_hacker_user", "wrong_password_sauce");
+
+  // 2. Extract the system's defensive validation message
+  const errorText = await loginPage.getErrorMessage();
+
+  // 3. Structural Assertion: Confirm the security wall handles the threat correctly
+  expect(errorText).toContain(
+    "Username and password do not match any user in this service",
+  );
+  console.log(
+    "\n -> Success! Security wall successfully blocked unauthorized access.",
+  );
+});
