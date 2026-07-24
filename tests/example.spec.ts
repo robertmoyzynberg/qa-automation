@@ -12,6 +12,17 @@ test("Enterprise E2E: Data-Driven Multi-Product Validation Suite", async ({
   const inventoryPage = new InventoryPage(page);
   const checkoutPage = new CheckoutPage(page);
 
+  // --- AUTONOMOUS TOOL PROTOCOL: Universal Wire Listener ---
+  await page.route("**/*", async (route) => {
+    const request = route.request();
+    // Log the resource type and target URL for every network event
+    console.log(
+      `[WIRE EVENT] 🛰️ ${request.method()} | ${request.resourceType().toUpperCase()} -> ${request.url()}`,
+    );
+    await route.continue();
+  });
+  // -----------------------------------------------------------
+
   // 1. Dynamic Authentication using JSON dataset mapping
   await loginPage.navigate();
   await loginPage.login(
